@@ -1,8 +1,26 @@
 import { PrismaClient } from '@prisma/client';
+import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
 
 async function main() {
+  // 0. Criar usuário administrativo padrão
+  const defaultPassword = await bcrypt.hash('123456', 10);
+  await prisma.user.upsert({
+    where: { email: 'thiagoealmeida85@gmail.com' },
+    update: {
+      name: 'Thiago Almeida',
+      password: defaultPassword,
+      role: 'ADMIN',
+    },
+    create: {
+      name: 'Thiago Almeida',
+      email: 'thiagoealmeida85@gmail.com',
+      password: defaultPassword,
+      role: 'ADMIN',
+    },
+  });
+
   // 1. Criar Loja Parceira
   const amazon = await prisma.store.upsert({
     where: { id: 'store_amazon_01' },

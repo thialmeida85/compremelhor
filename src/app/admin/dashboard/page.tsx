@@ -1,9 +1,21 @@
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { redirect } from "next/navigation";
 import prisma from "@/lib/prisma";
 import Link from "next/link";
 
 export const revalidate = 60; // Atualizar a cada 60 segundos
 
 export default async function AdminDashboard() {
+  const session = await getServerSession(authOptions);
+  if (!session?.user) {
+    redirect("/login");
+  }
+
+  if ((session.user as any).role !== "ADMIN") {
+    redirect("/login");
+  }
+
   try {
     // Buscar estatísticas gerais
     const totalProducts = await prisma.product.count({ where: { isActive: true } });
