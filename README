@@ -1,0 +1,20 @@
+Recomendo a seguinte abordagem para subir o MVP em poucas horas:
+
+Configuração de Banco de Dados:
+
+Crie uma conta no Neon.tech.
+Crie um banco PostgreSQL e copie a DATABASE_URL.
+Adicione no arquivo .env: DATABASE_URL="postgres://seu-usuario:senha@seu-host.neon.tech/compre-melhor?sslmode=require"
+Setup do Projeto Local:
+
+npx create-next-app@latest compre-melhor (usando TypeScript, Tailwind, App Router).
+Instale as dependências: npm i prisma @prisma/client next-auth bcrypt zod
+Rode npx prisma db push para criar as tabelas no Neon.
+Crie um script de seed.ts simples para popular algumas categorias e 2 ou 3 ferramentas.
+Deploy (Frontend e Backend):
+
+Suba o repositório para o GitHub.
+Conecte o repositório na Vercel.
+Adicione a variável DATABASE_URL na Vercel e o comando de build npx prisma generate && next build.
+A Vercel cuidará do frontend, das API Routes (tracking) e das Server Actions sem precisar separar repositórios.
+Esta estrutura cobre tudo que você pediu de forma segura e elegante. Não utiliza scraping que quebra políticas, mantém total transparência (CTAs laranja bem nítidos e avisos), foca forte no tracking para sua tomada de decisão futura e cria a base para escalar usando OAuth no futuro (Mercado Livre e Auth.js para logins de usuários).

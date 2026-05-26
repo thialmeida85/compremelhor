@@ -1,0 +1,119 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// --- Autenticação & Usuários ---
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  password      String?   // Hash bcrypt
+  whatsapp      String?
+  role          Role      @default(USER)
+  createdAt     DateTime  @default(now())
+  
+  savedProducts SavedProduct[]
+  whatsappReqs  WhatsappRequest[]
+  events        EventLog[]
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+// --- Catálogo de Produtos ---
+model Category {
+  id          String    @id @default(cuid())
+  name        String
+  slug        String    @unique
+  parentId    String?
+  description String?
+  imageUrl    String?
+  
+  products    Product[]
+}
+
+model Store {
+  id                 String    @id @default(cuid())
+  name               String
+  logoUrl            String?
+  baseUrl            String
+  affiliateProgram   String?
+  isActive           Boolean   @default(true)
+  
+  products           Product[]
+}
+
+model Product {
+  id                 String    @id @default(cuid())
+  title              String
+  slug               String    @unique
+  shortDescription   String?
+  description        String?
+  imageUrl           String
+  currentPrice       Float
+  oldPrice           Float?
+  discountPercentage Int?
+  affiliateUrl       String
+  originalUrl        String
+  brand              String?
+  isPriceTarget      Boolean   @default(false) // Selo Preço no Alvo
+  isActive           Boolean   @default(true)
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+  
+  categoryId         String
+  category           Category  @relation(fields: [categoryId], references: [id])
+  
+  storeId            String
+  store              Store     @relation(fields: [storeId], references: [id])
+  
+  savedBy            SavedProduct[]
+  events             EventLog[]
+}
+
+// --- Ecossistema de Retenção ---
+model SavedProduct {
+  id        String   @id @default(cuid())
+  userId    String
+  productId String
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, productId])
+}
+
+model WhatsappRequest {
+  id        String   @id @default(cuid())
+  userId    String?
+  name      String?
+  phone     String
+  products  Json     // Array de IDs ou detalhes no momento do pedido
+  message   String?
+  status    String   @default("PENDING")
+  createdAt DateTime @default(now())
+  
+  user      User?    @relation(fields: [userId], references: [id])
+}
+
+// --- Tracking e Analytics ---
+model EventLog {
+  id                 String   @id @default(cuid())
+  eventType          String   // page_view, affiliate_click, etc.
+  anonymousSessionId String?
+  userId             String?
+  productId          String?
+  metadata           Json?    // utms, browser, referrer, etc.
+  createdAt          DateTime @default(now())
+
+  user               User?    @relation(fields: [userId], references: [id])
+  product            Product? @relation(fields: [productId], references: [id])
+}
