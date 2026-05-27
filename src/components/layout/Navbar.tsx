@@ -1,6 +1,11 @@
 import Link from "next/link";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { UserMenu } from "./UserMenu";
 
-export function Navbar() {
+export async function Navbar() {
+  const session = await getServerSession(authOptions);
+
   return (
     <header className="bg-brand-black border-b border-brand-graphite sticky top-0 z-50">
       <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between gap-4">
@@ -33,9 +38,14 @@ export function Navbar() {
             <span className="text-lg">❤️</span>
             <span className="hidden sm:block">Minha Lista</span>
           </Link>
-          <Link href="/login" className="bg-brand-orange text-white px-4 py-2 rounded font-bold text-sm hover:bg-orange-600 transition">
-            Entrar
-          </Link>
+          
+          {session?.user ? (
+            <UserMenu userName={session.user.name || session.user.email?.split("@")[0] || "Admin"} />
+          ) : (
+            <Link href="/login" className="bg-brand-orange text-white px-4 py-2 rounded font-bold text-sm hover:bg-orange-600 transition">
+              Entrar
+            </Link>
+          )}
         </div>
       </div>
       
