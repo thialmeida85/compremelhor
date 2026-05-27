@@ -54,14 +54,14 @@ model Product {
   id                 String    @id @default(cuid())
   title              String
   slug               String    @unique
-  shortDescription   String?
-  description        String?
-  imageUrl           String
+  shortDescription   String?   @db.Text
+  description        String?   @db.LongText
+  imageUrl           String    @db.Text
   currentPrice       Float
   oldPrice           Float?
   discountPercentage Int?
-  affiliateUrl       String
-  originalUrl        String
+  affiliateUrl       String    @db.Text
+  originalUrl        String    @db.Text
   brand              String?
   isPriceTarget      Boolean   @default(false) // Selo Preço no Alvo
   isActive           Boolean   @default(true)
