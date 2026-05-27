@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
-import { trackAndRedirect } from "@/app/actions/trackClick";
-import { SaveButton } from "./SaveButton";
+import { trackAndRedirect } from "@/app/actions/track-click";
+import { SaveButton } from "./save-button";
 
 interface ProductProps {
   id: string;
@@ -15,7 +15,7 @@ interface ProductProps {
   isPriceTarget: boolean;
 }
 
-export function ProductCard({ product }: { product: ProductProps }) {
+export function product-card({ product }: { product: ProductProps }) {
   const formatPrice = (price: number) => 
     new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(price);
 
@@ -74,7 +74,7 @@ export function ProductCard({ product }: { product: ProductProps }) {
       </form>
       
       <div className="mt-2">
-        <SaveButton product={product} />
+        <save-button product={product} />
       </div>
       
       {/* Aviso de Transparência Reduzido */}

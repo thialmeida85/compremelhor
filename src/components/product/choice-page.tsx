@@ -1,6 +1,6 @@
 "use client";
 
-import { trackAndRedirect } from "@/app/actions/trackClick";
+import { trackAndRedirect } from "@/app/actions/track-click";
 import Image from "next/image";
 
 interface StoreOption {
@@ -10,7 +10,7 @@ interface StoreOption {
   logo?: string;
 }
 
-export function ChoicePage({ 
+export function choice-page({ 
   productId, 
   productTitle, 
   currentPrice, 

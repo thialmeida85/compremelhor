@@ -2,7 +2,7 @@ import prisma from "@/lib/prisma";
 import { ProductCard } from "@/components/product/ProductCard";
 import Link from "next/link";
 import Image from "next/image";
-import { SchemaMarkup } from "@/components/seo/SchemaMarkup";
+import { SchemaMarkup } from "@/components/seo/schema-markup";
 
 // Otimização: Usar Incremental Static Regeneration (ISR) em vez de force-dynamic
 export const revalidate = 3600; // Atualiza o cache da página a cada 1 hora
@@ -51,7 +51,7 @@ export default async function Home({
 
     return (
       <main className="min-h-screen bg-brand-offwhite">
-        <SchemaMarkup schema={websiteSchema} />
+        <schema-markup schema={websiteSchema} />
         {/* Hero Section */}
         <section className="bg-brand-black text-white py-16 px-6">
           <div className="max-w-6xl mx-auto">

@@ -16,7 +16,7 @@ type Product = {
   brand?: string | null;
 };
 
-export function EditProductForm({ product }: { product: Product }) {
+export function edit-product-form({ product }: { product: Product }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState<{ type: "success" | "error"; message: string } | null>(null);

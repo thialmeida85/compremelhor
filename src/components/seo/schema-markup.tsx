@@ -3,11 +3,11 @@
  * Melhora a indexação e exibição nos resultados de busca
  */
 
-interface SchemaMarkupProps {
+interface schema-markupProps {
   schema: Record<string, any>;
 }
 
-export function SchemaMarkup({ schema }: SchemaMarkupProps) {
+export function schema-markup({ schema }: schema-markupProps) {
   return (
     <script
       type="application/ld+json"

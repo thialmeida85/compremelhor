@@ -2,7 +2,7 @@ import prisma from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { trackAndRedirect } from "@/app/actions/trackClick";
+import { trackAndRedirect } from "@/app/actions/track-click";
 import { SaveButton } from "@/components/product/SaveButton";
 import { SchemaMarkup } from "@/components/seo/SchemaMarkup";
 import { PriceHistory } from "@/components/product/PriceHistory";

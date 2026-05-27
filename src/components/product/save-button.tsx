@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 
-export function SaveButton({ product }: { product: any }) {
+export function save-button({ product }: { product: any }) {
   const [saved, setSaved] = useState(false);
 
   useEffect(() => {

@@ -156,7 +156,7 @@ export async function POST(request: Request) {
     // Tentativa F: Web Scraping (Caso a API esteja a bloquear os dados)
     if (!mlData) {
       try {
-        const { parseMercadoLivreProduct } = await import("@/lib/mercadoLivre");
+        const { parseMercadoLivreProduct } = await import("@/lib/mercado-livre");
         const scrapedData = await parseMercadoLivreProduct(finalUrl);
         mlData = {
           id: itemId,

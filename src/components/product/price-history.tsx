@@ -7,12 +7,12 @@ interface PricePoint {
   price: number;
 }
 
-export function PriceHistory({ currentPrice }: { currentPrice: number }) {
+export function price-history({ currentPrice }: { currentPrice: number }) {
   const [history, setHistory] = useState<PricePoint[]>([]);
 
   useEffect(() => {
     // Simulação de histórico de preços para demonstração
-    // Em produção, isso viria de uma tabela PriceHistory no banco
+    // Em produção, isso viria de uma tabela price-history no banco
     const points: PricePoint[] = [];
     const now = new Date();
     
