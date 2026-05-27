@@ -3,9 +3,7 @@ import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import prisma from "@/lib/prisma";
-
-// Força o servidor a carregar os dados sempre em tempo real no painel (sem cache)
-export const dynamic = "force-dynamic";
+import ProductActionsDropdown from "@/components/admin/ProductActionsDropdown";
 
 export default async function AdminProdutos({
   searchParams,
@@ -124,13 +122,8 @@ export default async function AdminProdutos({
                         {product.isActive ? "Ativo" : "Inativo"}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-right whitespace-nowrap">
-                      <Link href={`/oferta/${product.slug}`} target="_blank" className="text-blue-600 hover:text-blue-800 font-medium mr-4">
-                        Ver na loja
-                      </Link>
-                      <Link href={`/admin/produtos/${product.id}/editar`} className="text-brand-orange hover:text-orange-700 font-medium transition">
-                        Editar
-                      </Link>
+                    <td className="px-6 py-4 text-right">
+                      <ProductActionsDropdown productId={product.id} productSlug={product.slug} />
                     </td>
                   </tr>
                 ))}

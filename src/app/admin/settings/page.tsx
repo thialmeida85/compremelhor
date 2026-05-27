@@ -11,7 +11,7 @@ export default async function AdminSettings() {
     redirect("/login");
   }
 
-  if ((session.user as any).role !== "ADMIN") {
+  if (session.user.role !== "ADMIN") {
     redirect("/login");
   }
 

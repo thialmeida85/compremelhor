@@ -6,7 +6,7 @@ export default function ChangePasswordForm() {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [status, setStatus] = useState<string | null>(null);
+  const [status, setStatus] = useState<{ type: "success" | "error"; message: string } | null>(null);
   const [loading, setLoading] = useState(false);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -14,7 +14,7 @@ export default function ChangePasswordForm() {
     setStatus(null);
 
     if (newPassword !== confirmPassword) {
-      setStatus("A nova senha e a confirmação não coincidem.");
+      setStatus({ type: "error", message: "A nova senha e a confirmação não coincidem." });
       return;
     }
 
@@ -30,14 +30,14 @@ export default function ChangePasswordForm() {
 
     const result = await response.json();
     if (!response.ok) {
-      setStatus(result.message || "Não foi possível atualizar a senha.");
+      setStatus({ type: "error", message: result.message || "Não foi possível atualizar a senha." });
       return;
     }
 
     setCurrentPassword("");
     setNewPassword("");
     setConfirmPassword("");
-    setStatus("Senha atualizada com sucesso.");
+    setStatus({ type: "success", message: "Senha atualizada com sucesso." });
   }
 
   return (
@@ -91,8 +91,8 @@ export default function ChangePasswordForm() {
         </div>
 
         {status ? (
-          <p className={`text-sm ${status.includes("sucesso") ? "text-green-600" : "text-red-600"}`}>
-            {status}
+          <p className={`text-sm font-medium ${status.type === "success" ? "text-green-600" : "text-red-600"}`}>
+            {status.message}
           </p>
         ) : null}
 

@@ -22,7 +22,7 @@ export async function POST(request: Request) {
   try {
     // 1. Verificação extra de segurança: apenas ADMIN pode importar
     const session = await getServerSession(authOptions);
-    if (!session?.user || (session.user as any).role !== "ADMIN") {
+    if (session?.user?.role !== "ADMIN") {
       return NextResponse.json({ error: "Acesso negado. Sessão expirada ou sem permissões." }, { status: 401 });
     }
 
