@@ -2,6 +2,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import prisma from "@/lib/prisma";
 import ProductActionsDropdown from "@/components/admin/ProductActionsDropdown";
 
@@ -103,11 +104,14 @@ export default async function AdminProdutos({
                 {products.map((product) => (
                   <tr key={product.id} className="hover:bg-gray-50 transition">
                     <td className="px-6 py-4 flex items-center gap-4">
-                      <img 
-                        src={product.imageUrl} 
-                        alt={product.title} 
-                        className="h-10 w-10 rounded object-cover border border-gray-200 bg-white" 
-                      />
+                      <div className="relative h-10 w-10 rounded overflow-hidden border border-gray-200 bg-white flex-shrink-0">
+                        <Image 
+                          src={product.imageUrl} 
+                          alt={product.title} 
+                          fill
+                          className="object-cover" 
+                        />
+                      </div>
                       <span className="font-medium text-brand-graphite line-clamp-1 max-w-[200px]" title={product.title}>
                         {product.title}
                       </span>

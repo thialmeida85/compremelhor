@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useState } from "react";
+import Image from "next/image";
 
 type ImportedProduct = {
   id: string;
@@ -99,7 +100,14 @@ export default function ImportForm() {
             <section className="mt-10 rounded-3xl border border-gray-200 bg-brand-offwhite p-6">
               <h2 className="text-2xl font-semibold text-brand-graphite mb-4">Produto inserido</h2>
               <div className="grid gap-4 md:grid-cols-[120px_1fr] items-start">
-                <img src={product.imageUrl} alt={product.title} className="h-32 w-full rounded-3xl object-cover" />
+                <div className="relative h-32 w-full rounded-3xl overflow-hidden">
+                  <Image 
+                    src={product.imageUrl} 
+                    alt={product.title} 
+                    fill 
+                    className="object-cover" 
+                  />
+                </div>
                 <div>
                   <h3 className="text-xl font-bold text-brand-graphite mb-2">{product.title}</h3>
                   <p className="text-gray-600 mb-3">Preço: R$ {product.currentPrice.toFixed(2)}</p>

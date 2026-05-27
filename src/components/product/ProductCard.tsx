@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { trackAndRedirect } from "@/app/actions/trackClick";
 import { SaveButton } from "./SaveButton";
 
@@ -31,10 +32,13 @@ export function ProductCard({ product }: { product: ProductProps }) {
       {/* Imagem do Produto */}
       <Link href={`/oferta/${product.slug}`} className="relative w-full h-48 mb-4 block group">
         <div className="relative w-full h-full group-hover:scale-105 transition-transform duration-300">
-          <img 
+          <Image 
             src={product.imageUrl} 
             alt={product.title} 
-            className="w-full h-full object-contain absolute inset-0" 
+            fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+            className="object-contain" 
+            priority={false}
           />
         </div>
       </Link>

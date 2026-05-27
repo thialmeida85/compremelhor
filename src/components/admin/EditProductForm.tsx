@@ -6,11 +6,14 @@ import { useRouter } from "next/navigation";
 type Product = {
   id: string;
   title: string;
+  shortDescription?: string | null;
+  description?: string | null;
   currentPrice: number;
   oldPrice: number | null;
   imageUrl: string;
   affiliateUrl: string;
   isActive: boolean;
+  brand?: string | null;
 };
 
 export default function EditProductForm({ product }: { product: Product }) {
@@ -20,16 +23,43 @@ export default function EditProductForm({ product }: { product: Product }) {
 
   const [formData, setFormData] = useState({
     title: product.title,
+    shortDescription: product.shortDescription || "",
+    description: product.description || "",
     currentPrice: product.currentPrice,
     oldPrice: product.oldPrice || "",
     imageUrl: product.imageUrl,
     affiliateUrl: product.affiliateUrl,
     isActive: product.isActive,
+    brand: product.brand || "",
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.type === "checkbox" ? e.target.checked : e.target.value;
+  const [aiLoading, setAiLoading] = useState(false);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const value = e.target.type === "checkbox" ? (e.target as HTMLInputElement).checked : e.target.value;
     setFormData({ ...formData, [e.target.name]: value });
+  };
+
+  const generateDescription = async () => {
+    setAiLoading(true);
+    try {
+      const res = await fetch("/api/ai/generate-description", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+          title: formData.title,
+          brand: formData.brand
+        }),
+      });
+      const data = await res.json();
+      if (data.description) {
+        setFormData(prev => ({ ...prev, description: data.description }));
+      }
+    } catch (error) {
+      console.error("Erro ao gerar descrição:", error);
+    } finally {
+      setAiLoading(false);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -58,9 +88,41 @@ export default function EditProductForm({ product }: { product: Product }) {
   return (
     <div className="bg-white rounded-3xl shadow-sm border border-gray-200 p-8">
       <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Título do Produto</label>
+            <input type="text" name="title" required value={formData.title} onChange={handleChange} className="w-full rounded-2xl border border-gray-300 px-4 py-3 text-sm focus:border-brand-orange focus:outline-none" />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Marca</label>
+            <input type="text" name="brand" value={formData.brand} onChange={handleChange} className="w-full rounded-2xl border border-gray-300 px-4 py-3 text-sm focus:border-brand-orange focus:outline-none" />
+          </div>
+        </div>
+
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Título do Produto</label>
-          <input type="text" name="title" required value={formData.title} onChange={handleChange} className="w-full rounded-2xl border border-gray-300 px-4 py-3 text-sm focus:border-brand-orange focus:outline-none" />
+          <label className="block text-sm font-medium text-gray-700 mb-2">Descrição Curta (SEO)</label>
+          <input type="text" name="shortDescription" value={formData.shortDescription} onChange={handleChange} className="w-full rounded-2xl border border-gray-300 px-4 py-3 text-sm focus:border-brand-orange focus:outline-none" />
+        </div>
+
+        <div>
+          <div className="flex justify-between items-center mb-2">
+            <label className="block text-sm font-medium text-gray-700">Descrição Completa</label>
+            <button 
+              type="button" 
+              onClick={generateDescription}
+              disabled={aiLoading}
+              className="text-xs font-bold text-brand-orange hover:text-orange-600 transition flex items-center gap-1"
+            >
+              {aiLoading ? "Gerando..." : "✨ Gerar com IA"}
+            </button>
+          </div>
+          <textarea 
+            name="description" 
+            rows={6} 
+            value={formData.description} 
+            onChange={handleChange} 
+            className="w-full rounded-2xl border border-gray-300 px-4 py-3 text-sm focus:border-brand-orange focus:outline-none"
+          />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

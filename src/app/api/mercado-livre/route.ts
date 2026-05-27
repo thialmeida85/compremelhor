@@ -33,6 +33,16 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Por favor, informe o link do Mercado Livre." }, { status: 400 });
     }
 
+    // Validação básica de domínio para evitar abusos
+    const isMLUrl = rawUrl.includes("mercadolivre.com.br") || 
+                    rawUrl.includes("mercadolibre.com") || 
+                    rawUrl.includes("mlstatic.com") ||
+                    rawUrl.includes("mercadolivre.com");
+    
+    if (!isMLUrl) {
+      return NextResponse.json({ error: "A URL informada não parece ser do Mercado Livre." }, { status: 400 });
+    }
+
     let finalUrl = rawUrl;
 
     // 2. Expandir URL caso seja um link curto de afiliado (ex: /sec/XYZ)
