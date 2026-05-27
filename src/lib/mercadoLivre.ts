@@ -62,19 +62,12 @@ export async function parseMercadoLivreProduct(url: string): Promise<MercadoLivr
   const destination = new URL(url, "https://www.mercadolivre.com.br");
   const htmlResponse = await fetch(destination.toString(), {
     headers: {
-      "User-Agent":
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+      "User-Agent": "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",
       "Accept-Language": "pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7",
     },
   });
 
-  if (!htmlResponse.ok) {
-    throw new Error(`Falha ao buscar Mercado Livre: ${htmlResponse.status}`);
-  }
-
   const html = await htmlResponse.text();
-  const parser = new DOMParser();
-  const document = parser.parseFromString(html, "text/html");
 
   const jsonLdBlocks = parseJsonLd(html);
   const productData = jsonLdBlocks.find((item) => {
@@ -82,54 +75,47 @@ export async function parseMercadoLivreProduct(url: string): Promise<MercadoLivr
     return item["@type"] === "Product" || item["@type"] === "Oferta" || item["@type"] === "Offer";
   }) as any;
 
+  const titleMatch = html.match(/<meta\s+property="og:title"\s+content="([^"]+)"/i) || html.match(/<h1[^>]*>([^<]+)<\/h1>/i);
   const title =
     getFirstString(productData?.name) ||
     getFirstString(productData?.title) ||
-    document.querySelector("h1.ui-pdp-title")?.textContent?.trim() ||
-    document.querySelector("meta[property='og:title']")?.getAttribute("content") ||
-    "Produto Mercado Livre";
+    (titleMatch ? titleMatch[1] : "Produto Mercado Livre");
 
+  const descMatch = html.match(/<meta\s+name="description"\s+content="([^"]+)"/i);
   const description =
     getFirstString(productData?.description) ||
-    document.querySelector("meta[name='description']")?.getAttribute("content") ||
-    "Produto importado do Mercado Livre.";
+    (descMatch ? descMatch[1] : "Produto importado do Mercado Livre.");
 
+  const imgMatch = html.match(/<meta\s+property="og:image"\s+content="([^"]+)"/i);
   const imageUrl =
     getFirstString(productData?.image) ||
-    document.querySelector("meta[property='og:image']")?.getAttribute("content") ||
-    document.querySelector("picture img")?.getAttribute("src") ||
-    "";
+    (imgMatch ? imgMatch[1] : "");
 
+  const priceMatch = html.match(/<meta\s+itemprop="price"\s+content="([^"]+)"/i) || html.match(/<span\s+class="andes-money-amount__fraction">([^<]+)<\/span>/i);
   const rawPrice =
     getFirstString(productData?.offers?.price) ||
-    document.querySelector("meta[itemprop='price']")?.getAttribute("content") ||
-    document.querySelector("span.price-tag-fraction")?.textContent ||
-    document.querySelector("span.price-tag-symbol")?.textContent;
+    (priceMatch ? priceMatch[1] : null);
 
-  const currentPrice = parsePriceString(rawPrice);
-  if (currentPrice === null) {
-    throw new Error("Não foi possível extrair o preço do produto Mercado Livre.");
-  }
+  const currentPrice = parsePriceString(rawPrice) || 0;
 
+  const oldPriceMatch = html.match(/<s\s+class="andes-money-amount[^>]*>.*?<span\s+class="andes-money-amount__fraction">([^<]+)<\/span>.*?<\/s>/i);
   const rawOldPrice =
     getFirstString(productData?.offers?.priceSpecification?.price) ||
-    document.querySelector("span.andes-money-amount__fraction")?.textContent ||
-    null;
+    (oldPriceMatch ? oldPriceMatch[1] : null);
   const oldPrice = parsePriceString(rawOldPrice);
 
+  const brandMatch = html.match(/<span\s+class="ui-pdp-title__brand">([^<]+)<\/span>/i);
   const brand =
     getFirstString(productData?.brand?.name) ||
     getFirstString(productData?.brand) ||
-    document.querySelector("a.ui-pdp-title__brand")?.textContent?.trim() ||
-    document.querySelector("span.ui-pdp-title__brand")?.textContent?.trim() ||
-    null;
+    (brandMatch ? brandMatch[1] : null);
 
   const discountPercentage =
     oldPrice && currentPrice ? Math.round(((oldPrice - currentPrice) / oldPrice) * 100) : null;
 
   return {
-    title,
-    description,
+    title: title.replace(/&amp;/g, '&').replace(/&#39;/g, "'").replace(/&quot;/g, '"'),
+    description: description.replace(/&amp;/g, '&').replace(/&#39;/g, "'").replace(/&quot;/g, '"'),
     imageUrl,
     currentPrice,
     oldPrice,
