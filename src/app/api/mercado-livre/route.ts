@@ -3,6 +3,9 @@ import prisma from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 
+// Força o Next.js a compilar esta rota como dinâmica no servidor
+export const dynamic = "force-dynamic";
+
 // Função para criar o slug limpo e único
 function slugify(text: string) {
   return text
@@ -51,33 +54,76 @@ export async function POST(request: Request) {
     }
 
     // 4. Buscar os dados via API Pública do Mercado Livre (Bypassa o bloqueio do Datacenter)
-    let mlData;
-    let mlRes = await fetch(`https://api.mercadolibre.com/items/${itemId}`);
+    let mlData = null;
+    let actualItemId = itemId; // Guardamos o ID real do anúncio caso venha de uma busca
     
-    if (mlRes.ok) {
-      mlData = await mlRes.json();
+    // Tentativa A: Buscar como um anúncio direto (Item)
+    const itemRes = await fetch(`https://api.mercadolibre.com/items/${itemId}`);
+    if (itemRes.ok) {
+      mlData = await itemRes.json();
     } else {
-      // Fallback para Produtos Globais de Catálogo (quando caiem na rota /p/MLB...)
-      mlRes = await fetch(`https://api.mercadolibre.com/products/${itemId}`);
-      if (!mlRes.ok) {
-        return NextResponse.json({ error: "Este produto não foi encontrado na base de dados oficial do ML." }, { status: 404 });
+      // Tentativa B: Buscar como produto de catálogo (Product)
+      const prodRes = await fetch(`https://api.mercadolibre.com/products/${itemId}`);
+      if (prodRes.ok) {
+        const prodData = await prodRes.json();
+        if (prodData.buy_box_winner) {
+          mlData = {
+            id: prodData.buy_box_winner.item_id,
+            title: prodData.name,
+            price: prodData.buy_box_winner.price,
+            original_price: prodData.buy_box_winner.original_price || null,
+            pictures: prodData.pictures,
+            thumbnail: prodData.pictures?.[0]?.url,
+            permalink: prodData.permalink,
+            attributes: prodData.attributes,
+          };
+          actualItemId = prodData.buy_box_winner.item_id;
+        }
       }
-      const prodData = await mlRes.json();
-      mlData = {
-        title: prodData.name,
-        price: prodData.buy_box_winner?.price || 0,
-        original_price: prodData.buy_box_winner?.original_price || null,
-        pictures: prodData.pictures,
-        thumbnail: prodData.pictures?.[0]?.url,
-        permalink: prodData.permalink,
-        attributes: prodData.attributes,
-      };
+
+      // Tentativa C: Busca de anúncios vinculados ao catálogo (Ex: Gift Cards)
+      if (!mlData) {
+        const searchCatRes = await fetch(`https://api.mercadolibre.com/sites/MLB/search?catalog_product_id=${itemId}`);
+        if (searchCatRes.ok) {
+          const searchData = await searchCatRes.json();
+          if (searchData.results && searchData.results.length > 0) {
+            const bestItem = searchData.results[0];
+            actualItemId = bestItem.id;
+            
+            const bestItemRes = await fetch(`https://api.mercadolibre.com/items/${actualItemId}`);
+            if (bestItemRes.ok) {
+              mlData = await bestItemRes.json();
+            }
+          }
+        }
+      }
+      
+      // Tentativa D: Busca genérica (Fallback extremo)
+      if (!mlData) {
+        const searchGenRes = await fetch(`https://api.mercadolibre.com/sites/MLB/search?q=${itemId}`);
+        if (searchGenRes.ok) {
+          const searchData = await searchGenRes.json();
+          if (searchData.results && searchData.results.length > 0) {
+            const fallbackItem = searchData.results[0];
+            actualItemId = fallbackItem.id;
+            
+            const fallbackItemRes = await fetch(`https://api.mercadolibre.com/items/${actualItemId}`);
+            if (fallbackItemRes.ok) {
+              mlData = await fallbackItemRes.json();
+            }
+          }
+        }
+      }
     }
 
-    // 5. Buscar a descrição textual em detalhe
+    if (!mlData) {
+      return NextResponse.json({ error: "Este produto não foi encontrado na base de dados oficial do ML ou encontra-se inativo." }, { status: 404 });
+    }
+
+    // 5. Buscar a descrição textual em detalhe (Usando o ID resolvido)
     let description = mlData.title;
     try {
-      const descRes = await fetch(`https://api.mercadolibre.com/items/${itemId}/description`);
+      const descRes = await fetch(`https://api.mercadolibre.com/items/${actualItemId}/description`);
       if (descRes.ok) {
         const descData = await descRes.json();
         description = descData.plain_text || description;
