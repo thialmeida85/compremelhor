@@ -62,7 +62,7 @@ export default async function SearchPage({
             {products.length > 0 ? (
               <>
                 <p className="text-gray-600 mb-6">
-                  Encontrados <strong>{products.length}</strong> produto(s) para "{query}"
+                  Encontrados <strong>{products.length}</strong> produto(s) para &quot;{query}&quot;
                 </p>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                   {products.map((product) => (
@@ -86,7 +86,7 @@ export default async function SearchPage({
             ) : (
               <div className="bg-white rounded-lg p-12 text-center border border-gray-200">
                 <p className="text-gray-500 text-lg mb-4">
-                  Nenhum produto encontrado para "{query}"
+                  Nenhum produto encontrado para &quot;{query}&quot;
                 </p>
                 <p className="text-gray-400 mb-6">
                   Tente usar palavras-chave diferentes ou navegue pelas categorias.
