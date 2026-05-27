@@ -3,10 +3,10 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { trackAndRedirect } from "@/app/actions/track-click";
-import { SaveButton } from "@/components/product/SaveButton";
-import { SchemaMarkup } from "@/components/seo/SchemaMarkup";
-import { PriceHistory } from "@/components/product/PriceHistory";
-import { ChoicePage } from "@/components/product/ChoicePage";
+import { SaveButton } from "@/components/product/save-button";
+import { SchemaMarkup } from "@/components/seo/schema-markup";
+import { PriceHistory } from "@/components/product/price-history";
+import { ChoicePage } from "@/components/product/choice-page";
 
 export default async function OfertaPage({ params }: { params: { slug: string } }) {
   const product = await prisma.product.findUnique({

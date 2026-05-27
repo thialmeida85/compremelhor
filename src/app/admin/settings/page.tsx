@@ -2,7 +2,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import ChangePasswordForm from "@/components/admin/ChangePasswordForm";
+import ChangePasswordForm from "@/components/admin/change-password-form";
 
 export default async function AdminSettings() {
   const session = await getServerSession(authOptions);

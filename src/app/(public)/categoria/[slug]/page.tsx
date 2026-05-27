@@ -1,5 +1,5 @@
 import prisma from "@/lib/prisma";
-import { ProductCard } from "@/components/product/ProductCard";
+import { ProductCard } from "@/components/product/product-card";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 

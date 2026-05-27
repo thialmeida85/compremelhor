@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { ProductCard } from "@/components/product/ProductCard";
+import { ProductCard } from "@/components/product/product-card";
 
 interface SavedProduct {
   id: string;

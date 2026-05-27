@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import prisma from "@/lib/prisma";
-import ProductActionsDropdown from "@/components/admin/ProductActionsDropdown";
+import ProductActionsDropdown from "@/components/admin/product-actions-dropdown";
 
 export default async function AdminProdutos({
   searchParams,

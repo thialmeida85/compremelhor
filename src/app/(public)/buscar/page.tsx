@@ -1,5 +1,5 @@
 import prisma from "@/lib/prisma";
-import { ProductCard } from "@/components/product/ProductCard";
+import { ProductCard } from "@/components/product/product-card";
 import Link from "next/link";
 
 export const revalidate = 3600; // Atualiza o cache da página a cada 1 hora

@@ -1,7 +1,7 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import ImportForm from "@/components/admin/ImportForm";
+import ImportForm from "@/components/admin/import-form";
 
 export default async function ImportMercadoLivrePage() {
   const session = await getServerSession(authOptions);
