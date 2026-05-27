@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function ProductActionsDropdown({
   productId,
@@ -11,7 +12,9 @@ export default function ProductActionsDropdown({
   productSlug: string;
 }) {
   const [isOpen, setIsOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
 
   // Fecha o dropdown se o utilizador clicar fora dele
   useEffect(() => {
@@ -24,9 +27,23 @@ export default function ProductActionsDropdown({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (confirm("Tem certeza que deseja excluir este produto? Esta ação não pode ser desfeita.")) {
-      alert("Funcionalidade de exclusão será ativada em breve na API.");
+      setIsDeleting(true);
+      try {
+        const res = await fetch(`/api/admin/produtos/${productId}`, {
+          method: "DELETE",
+        });
+        if (res.ok) {
+          router.refresh();
+        } else {
+          alert("Erro ao excluir o produto.");
+        }
+      } catch (error) {
+        alert("Ocorreu um erro inesperado.");
+      } finally {
+        setIsDeleting(false);
+      }
     }
   };
 
@@ -56,8 +73,12 @@ Embase a criação deste texto em uma pesquisa de palavras-chave do Google Trend
       {isOpen && (
         <div className="absolute right-0 mt-2 w-72 origin-top-right rounded-2xl bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-50 overflow-hidden border border-gray-100">
           <div className="py-2">
-            <button onClick={handleDelete} className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition font-medium">
-              Excluir
+            <button 
+              onClick={handleDelete}
+              disabled={isDeleting}
+              className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition font-medium disabled:opacity-50"
+            >
+              {isDeleting ? "Excluindo..." : "Excluir"}
             </button>
             <Link href={`/admin/produtos/${productId}/editar`} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition">
               Editar
