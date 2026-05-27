@@ -30,8 +30,17 @@ export default function ProductActionsDropdown({
     }
   };
 
+  const handleClone = () => {
+    alert("Funcionalidade de clonagem simples será ativada em breve.");
+  };
+
   const handleCloneSEO = () => {
-    alert("Funcionalidade de clonagem com SEO (Groq) será ativada em breve na API.");
+    // Estrutura do prompt preparado para a API do Groq
+    const seoPrompt = `Crie um texto de SEO técnico para este produto. 
+O título deve ser diferente do original. 
+Embase a criação deste texto em uma pesquisa de palavras-chave do Google Trends e nas análises de dados e conversão do site.`;
+    
+    alert(`Pronto para integrar a clonagem com IA.\n\nPrompt base:\n"${seoPrompt}"`);
   };
 
   return (
@@ -45,21 +54,23 @@ export default function ProductActionsDropdown({
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-64 origin-top-right rounded-2xl bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-50 overflow-hidden border border-gray-100">
-          <div className="py-1">
-            <Link href={`/oferta/${productSlug}`} target="_blank" className="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition">
-              👁️ Ver oferta no site
-            </Link>
-            <Link href={`/admin/produtos/${productId}/editar`} className="block px-4 py-3 text-sm text-brand-orange hover:bg-orange-50 font-medium transition">
-              ✏️ Editar Produto
-            </Link>
-            <button onClick={handleCloneSEO} className="block w-full text-left px-4 py-3 text-sm text-blue-600 hover:bg-blue-50 transition">
-              🤖 Clonar c/ Texto SEO (Groq)
+        <div className="absolute right-0 mt-2 w-72 origin-top-right rounded-2xl bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-50 overflow-hidden border border-gray-100">
+          <div className="py-2">
+            <button onClick={handleDelete} className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition font-medium">
+              Excluir
             </button>
-            <div className="border-t border-gray-100 my-1"></div>
-            <button onClick={handleDelete} className="block w-full text-left px-4 py-3 text-sm text-red-600 hover:bg-red-50 font-medium transition">
-              🗑️ Excluir Produto
+            <Link href={`/admin/produtos/${productId}/editar`} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition">
+              Editar
+            </Link>
+            <button onClick={handleClone} className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition">
+              Clonar
             </button>
+            <button onClick={handleCloneSEO} className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition">
+              Clonar com alteração de textos
+            </button>
+            <Link href={`/oferta/${productSlug}`} target="_blank" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition">
+              Ver no site
+            </Link>
           </div>
         </div>
       )}
