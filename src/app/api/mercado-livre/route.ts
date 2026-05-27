@@ -28,6 +28,7 @@ export async function POST(request: Request) {
 
     const body = await request.json();
     const rawUrl = String(body?.url || "").trim();
+    const manualAffiliateUrl = String(body?.affiliateUrl || "").trim();
 
     if (!rawUrl) {
       return NextResponse.json({ error: "Por favor, informe o link do Mercado Livre." }, { status: 400 });
@@ -266,7 +267,7 @@ export async function POST(request: Request) {
         currentPrice: productData.currentPrice,
         oldPrice: productData.oldPrice,
         discountPercentage: productData.discountPercentage,
-        affiliateUrl: rawUrl, 
+        affiliateUrl: manualAffiliateUrl || rawUrl, 
         originalUrl: productData.url,
         brand: productData.brand,
         isPriceTarget: false,

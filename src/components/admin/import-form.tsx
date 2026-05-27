@@ -15,6 +15,7 @@ type ImportedProduct = {
 
 export default function ImportForm() {
   const [url, setUrl] = useState("");
+  const [affiliateUrl, setAffiliateUrl] = useState("");
   const [status, setStatus] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [product, setProduct] = useState<ImportedProduct | null>(null);
@@ -40,7 +41,10 @@ export default function ImportForm() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ url: url.trim() }),
+        body: JSON.stringify({ 
+          url: url.trim(),
+          affiliateUrl: affiliateUrl.trim() 
+        }),
       });
 
       const result = await response.json();
@@ -73,16 +77,34 @@ export default function ImportForm() {
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            <label className="block text-sm font-semibold text-brand-graphite">
-              Link do Mercado Livre
-            </label>
-            <input
-              type="url"
-              value={url}
-              onChange={(event) => setUrl(event.target.value)}
-              placeholder="https://www.mercadolivre.com.br/...."
-              className="w-full rounded-2xl border border-gray-300 px-4 py-3 focus:border-brand-orange focus:outline-none"
-            />
+            <div>
+              <label className="block text-sm font-semibold text-brand-graphite mb-1">
+                Link do Produto (Mercado Livre)
+              </label>
+              <input
+                type="url"
+                value={url}
+                onChange={(event) => setUrl(event.target.value)}
+                placeholder="https://www.mercadolivre.com.br/p/MLB..."
+                className="w-full rounded-2xl border border-gray-300 px-4 py-3 focus:border-brand-orange focus:outline-none"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-brand-graphite mb-1">
+                Seu Link de Afiliado (Opcional)
+              </label>
+              <input
+                type="url"
+                value={affiliateUrl}
+                onChange={(event) => setAffiliateUrl(event.target.value)}
+                placeholder="https://mercadolivre.com/sec/..."
+                className="w-full rounded-2xl border border-gray-300 px-4 py-3 focus:border-brand-orange focus:outline-none"
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                Se deixado em branco, o sistema usará o link do produto original.
+              </p>
+            </div>
 
             <button
               type="submit"
