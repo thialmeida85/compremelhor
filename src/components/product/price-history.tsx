@@ -7,7 +7,7 @@ interface PricePoint {
   price: number;
 }
 
-export function price-history({ currentPrice }: { currentPrice: number }) {
+export function PriceHistory({ currentPrice }: { currentPrice: number }) {
   const [history, setHistory] = useState<PricePoint[]>([]);
 
   useEffect(() => {

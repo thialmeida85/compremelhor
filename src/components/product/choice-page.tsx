@@ -10,7 +10,7 @@ interface StoreOption {
   logo?: string;
 }
 
-export function choice-page({ 
+export function ChoicePage({ 
   productId, 
   productTitle, 
   currentPrice, 

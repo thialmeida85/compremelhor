@@ -3,7 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { UserMenu } from "./user-menu";
 
-export async function navbar() {
+export async function Navbar() {
   const session = await getServerSession(authOptions);
 
   return (
@@ -40,7 +40,7 @@ export async function navbar() {
           </Link>
           
           {session?.user ? (
-            <user-menu userName={session.user.name || session.user.email?.split("@")[0] || "Admin"} />
+            <UserMenu userName={session.user.name || session.user.email?.split("@")[0] || "Admin"} />
           ) : (
             <Link href="/login" className="bg-brand-orange text-white px-4 py-2 rounded font-bold text-sm hover:bg-orange-600 transition">
               Entrar

@@ -15,7 +15,7 @@ interface ProductProps {
   isPriceTarget: boolean;
 }
 
-export function product-card({ product }: { product: ProductProps }) {
+export function ProductCard({ product }: { product: ProductProps }) {
   const formatPrice = (price: number) => 
     new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(price);
 
@@ -74,7 +74,7 @@ export function product-card({ product }: { product: ProductProps }) {
       </form>
       
       <div className="mt-2">
-        <save-button product={product} />
+        <SaveButton product={product} />
       </div>
       
       {/* Aviso de Transparência Reduzido */}

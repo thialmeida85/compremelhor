@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-export default function product-actions-dropdown({
+export default function ProductActionsDropdown({
   productId,
   productSlug,
 }: {

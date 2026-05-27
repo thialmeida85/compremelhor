@@ -7,7 +7,7 @@ interface schema-markupProps {
   schema: Record<string, any>;
 }
 
-export function schema-markup({ schema }: schema-markupProps) {
+export function SchemaMarkup({ schema }: schema-markupProps) {
   return (
     <script
       type="application/ld+json"

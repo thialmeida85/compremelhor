@@ -3,7 +3,7 @@
 import { signOut } from "next-auth/react";
 import Link from "next/link";
 
-export function user-menu({ userName }: { userName: string }) {
+export function UserMenu({ userName }: { userName: string }) {
   return (
     <div className="flex items-center gap-4">
       <Link href="/admin/dashboard" className="text-gray-300 hover:text-white transition text-sm font-medium hidden sm:block">

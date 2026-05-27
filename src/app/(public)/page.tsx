@@ -51,7 +51,7 @@ export default async function Home({
 
     return (
       <main className="min-h-screen bg-brand-offwhite">
-        <schema-markup schema={websiteSchema} />
+        <SchemaMarkup schema={websiteSchema} />
         {/* Hero Section */}
         <section className="bg-brand-black text-white py-16 px-6">
           <div className="max-w-6xl mx-auto">

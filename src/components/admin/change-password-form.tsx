@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-export default function change-password-form() {
+export default function ChangePasswordForm() {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");

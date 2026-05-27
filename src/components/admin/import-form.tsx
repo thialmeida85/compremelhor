@@ -13,7 +13,7 @@ type ImportedProduct = {
   affiliateUrl: string;
 };
 
-export default function import-form() {
+export default function ImportForm() {
   const [url, setUrl] = useState("");
   const [status, setStatus] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
