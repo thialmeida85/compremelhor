@@ -46,8 +46,16 @@ export async function POST(request: Request) {
     }
 
     // 3. Extrair a identificação oficial do produto (ID) - Ex: MLB123456789
-    const itemIdMatch = finalUrl.match(/MLB[-_]?\d+/i);
-    const itemId = itemIdMatch ? itemIdMatch[0].replace(/[-_]/g, '').toUpperCase() : null;
+    let itemId = null;
+    try {
+      const parsedUrlObj = new URL(finalUrl);
+      itemId = parsedUrlObj.searchParams.get("item_id");
+    } catch(e) {}
+    
+    if (!itemId) {
+      const itemIdMatch = finalUrl.match(/MLB[-_]?\d+/i);
+      itemId = itemIdMatch ? itemIdMatch[0].replace(/[-_]/g, '').toUpperCase() : null;
+    }
 
     if (!itemId) {
       return NextResponse.json({ error: "Não foi possível identificar o código do produto (MLB...) neste link." }, { status: 400 });
@@ -56,34 +64,37 @@ export async function POST(request: Request) {
     // 4. Buscar os dados via API Pública do Mercado Livre (Bypassa o bloqueio do Datacenter)
     let mlData = null;
     let actualItemId = itemId; // Guardamos o ID real do anúncio caso venha de uma busca
+    let catalogName = "";
+    let catalogData = null;
     
     // Tentativa A: Buscar como um anúncio direto (Item)
-    const itemRes = await fetch(`https://api.mercadolibre.com/items/${itemId}`);
+    const itemRes = await fetch(`https://api.mercadolibre.com/items/${itemId}`, { cache: "no-store" });
     if (itemRes.ok) {
       mlData = await itemRes.json();
     } else {
       // Tentativa B: Buscar como produto de catálogo (Product)
-      const prodRes = await fetch(`https://api.mercadolibre.com/products/${itemId}`);
+      const prodRes = await fetch(`https://api.mercadolibre.com/products/${itemId}`, { cache: "no-store" });
       if (prodRes.ok) {
-        const prodData = await prodRes.json();
-        if (prodData.buy_box_winner) {
+        catalogData = await prodRes.json();
+        catalogName = catalogData.name;
+        if (catalogData.buy_box_winner) {
           mlData = {
-            id: prodData.buy_box_winner.item_id,
-            title: prodData.name,
-            price: prodData.buy_box_winner.price,
-            original_price: prodData.buy_box_winner.original_price || null,
-            pictures: prodData.pictures,
-            thumbnail: prodData.pictures?.[0]?.url,
-            permalink: prodData.permalink,
-            attributes: prodData.attributes,
+            id: catalogData.buy_box_winner.item_id,
+            title: catalogData.name,
+            price: catalogData.buy_box_winner.price,
+            original_price: catalogData.buy_box_winner.original_price || null,
+            pictures: catalogData.pictures,
+            thumbnail: catalogData.pictures?.[0]?.url,
+            permalink: catalogData.permalink,
+            attributes: catalogData.attributes,
           };
-          actualItemId = prodData.buy_box_winner.item_id;
+          actualItemId = catalogData.buy_box_winner.item_id;
         }
       }
 
       // Tentativa C: Busca de anúncios vinculados ao catálogo (Ex: Gift Cards)
       if (!mlData) {
-        const searchCatRes = await fetch(`https://api.mercadolibre.com/sites/MLB/search?catalog_product_id=${itemId}`);
+        const searchCatRes = await fetch(`https://api.mercadolibre.com/sites/MLB/search?catalog_product_id=${itemId}`, { cache: "no-store" });
         if (searchCatRes.ok) {
           const searchData = await searchCatRes.json();
           if (searchData.results && searchData.results.length > 0) {
@@ -100,7 +111,8 @@ export async function POST(request: Request) {
       
       // Tentativa D: Busca genérica (Fallback extremo)
       if (!mlData) {
-        const searchGenRes = await fetch(`https://api.mercadolibre.com/sites/MLB/search?q=${itemId}`);
+        const searchQuery = catalogName || itemId;
+        const searchGenRes = await fetch(`https://api.mercadolibre.com/sites/MLB/search?q=${encodeURIComponent(searchQuery)}`, { cache: "no-store" });
         if (searchGenRes.ok) {
           const searchData = await searchGenRes.json();
           if (searchData.results && searchData.results.length > 0) {
@@ -113,6 +125,21 @@ export async function POST(request: Request) {
             }
           }
         }
+      }
+
+      // Tentativa E: Extração de Catálogo Forçada (Permite preço 0, não bloqueando a importação)
+      if (!mlData && catalogData) {
+         mlData = {
+            id: catalogData.id,
+            title: catalogData.name,
+            price: 0,
+            original_price: null,
+            pictures: catalogData.pictures,
+            thumbnail: catalogData.pictures?.[0]?.url,
+            permalink: catalogData.permalink,
+            attributes: catalogData.attributes,
+          };
+          actualItemId = catalogData.id;
       }
     }
 
@@ -137,7 +164,7 @@ export async function POST(request: Request) {
       title: mlData.title,
       description: description,
       imageUrl: mlData.pictures?.[0]?.secure_url || mlData.thumbnail || "",
-      currentPrice: mlData.price,
+      currentPrice: mlData.price || 0,
       oldPrice: mlData.original_price || null,
       discountPercentage: mlData.original_price && mlData.price < mlData.original_price
         ? Math.round(((mlData.original_price - mlData.price) / mlData.original_price) * 100) 
