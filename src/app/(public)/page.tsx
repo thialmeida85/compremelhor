@@ -2,8 +2,8 @@ import prisma from "@/lib/prisma";
 import { ProductCard } from "@/components/product/ProductCard";
 import Link from "next/link";
 
-// Usar renderização dinâmica para evitar erros de conexão ao banco durante build
-export const dynamic = "force-dynamic";
+// Otimização: Usar Incremental Static Regeneration (ISR) em vez de force-dynamic
+export const revalidate = 3600; // Atualiza o cache da página a cada 1 hora
 
 export default async function Home() {
   try {

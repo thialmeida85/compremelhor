@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { trackAndRedirect } from "@/app/actions/trackClick";
+import { SaveButton } from "./SaveButton";
 
 interface ProductProps {
   id: string;
@@ -68,13 +69,11 @@ export function ProductCard({ product }: { product: ProductProps }) {
         >
           Ver oferta
         </button>
-        <button 
-          type="button" 
-          className="w-full border border-brand-graphite text-brand-graphite font-semibold py-2 rounded hover:bg-brand-offwhite transition"
-        >
-          Salvar para depois
-        </button>
       </form>
+      
+      <div className="mt-2">
+        <SaveButton product={product} />
+      </div>
       
       {/* Aviso de Transparência Reduzido */}
       <p className="text-[10px] text-gray-400 text-center mt-3">

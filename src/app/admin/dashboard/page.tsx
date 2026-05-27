@@ -193,6 +193,12 @@ export default async function AdminDashboard() {
                   📥 Importar do Mercado Livre
                 </Link>
                 <Link
+                  href="/admin/settings"
+                  className="block w-full p-4 bg-brand-graphite text-white rounded-lg font-semibold hover:bg-black transition text-center"
+                >
+                  ⚙️ Configurações de Conta
+                </Link>
+                <Link
                   href="/admin/produtos"
                   className="block w-full p-4 bg-brand-gold text-brand-black rounded-lg font-semibold hover:bg-yellow-500 transition text-center"
                 >
