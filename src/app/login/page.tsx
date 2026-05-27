@@ -71,7 +71,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-brand-orange text-white py-3.5 rounded-xl font-bold hover:bg-orange-600 transition disabled:opacity-70 disabled:cursor-not-allowed mt-2"
+            className="w-full bg-brand-orange text-white py-3.5 rounded-xl font-bold hover:bg-orange-600 transition disabled:opacity-70 mt-2"
           >
             {isLoading ? "A aceder..." : "Entrar no sistema"}
           </button>
